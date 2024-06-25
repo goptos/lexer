@@ -8,6 +8,8 @@ import (
 	"github.com/goptos/utils"
 )
 
+var verbose = (*utils.Verbose).New(nil)
+
 const (
 	Code      string = "Code"
 	Quote     string = "Quote"
@@ -64,7 +66,7 @@ func collect(t []Token, i int, j int) string {
 }
 
 func printLastToken(tokens []Token) {
-	utils.Debug("%d\t%s\t%s\n", len(tokens)-1, tokens[len(tokens)-1].T, tokens[len(tokens)-1].V)
+	verbose.Printf(2, "%d\t%s\t%s\n", len(tokens)-1, tokens[len(tokens)-1].T, tokens[len(tokens)-1].V)
 }
 
 func collectCodeBlocks(t []Token) []Token {
@@ -138,23 +140,23 @@ func Tokens(source string) (*[]Token, error) {
 		return nil, err
 	}
 
-	utils.Debug("::: lexer :::\n")
+	verbose.Printf(2, "::: lexer :::\n")
 	var t = *baseTokens
 
-	utils.Debug(" :: code ::\n")
+	verbose.Printf(2, " :: code ::\n")
 	t = collectCodeBlocks(t)
 
-	utils.Debug(" :: quotes ::\n")
+	verbose.Printf(2, " :: quotes ::\n")
 	t = collectDoubleQuoteSections(t)
 
-	if utils.DEBUG {
-		utils.Debug(" :: new base ::\n")
+	if verbose.Level >= 2 {
+		verbose.Printf(2, " :: new base ::\n")
 		for i := 0; i < len(t); i++ {
-			utils.Debug("%d\t%s\t%s\n", i, t[i].T, t[i].V)
+			verbose.Printf(2, "%d\t%s\t%s\n", i, t[i].T, t[i].V)
 		}
 	}
 
-	utils.Debug(" :: tags ::\n")
+	verbose.Printf(2, " :: tags ::\n")
 	var tokens = make([]Token, 0)
 	var j = (*Increment).New(nil, len(t))
 	for i := 0; i < len(t); {
@@ -345,7 +347,7 @@ func Tokens(source string) (*[]Token, error) {
 
 				if !innerHit {
 					i++
-					utils.Debug("unknown inner token at '%d' type '%s' value '%s'\n", i-1, t[i-1].T, t[i-1].V)
+					verbose.Printf(2, "unknown inner token at '%d' type '%s' value '%s'\n", i-1, t[i-1].T, t[i-1].V)
 					return nil, fmt.Errorf("unknown inner token at '%d' type '%s' value '%s'", i-1, t[i-1].T, t[i-1].V)
 				}
 			}
@@ -387,7 +389,7 @@ func Tokens(source string) (*[]Token, error) {
 
 		if !hit {
 			i++
-			utils.Debug("unknown token at '%d' type '%s' value '%s'\n", i-1, t[i-1].T, t[i-1].V)
+			verbose.Printf(2, "unknown token at '%d' type '%s' value '%s'\n", i-1, t[i-1].T, t[i-1].V)
 			return nil, fmt.Errorf("unknown token at '%d' type '%s' value '%s'", i-1, t[i-1].T, t[i-1].V)
 		}
 	}

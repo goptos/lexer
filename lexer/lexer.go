@@ -8,6 +8,8 @@ import (
 	"github.com/goptos/utils"
 )
 
+var verbose = (*utils.Verbose).New(nil)
+
 const (
 	OpenCodeBracket  string = "0"
 	CloseCodeBracket string = "1"
@@ -59,7 +61,7 @@ func preProcess(source string) string {
 }
 
 func Tokens(source string) (*[]Token, error) {
-	utils.Debug("::: base lexer :::\n")
+	verbose.Printf(3, "::: base lexer :::\n")
 	var tokens = make([]Token, 0)
 	var digit = ""
 	var word = ""
@@ -128,7 +130,7 @@ func Tokens(source string) (*[]Token, error) {
 		}
 	}
 	for i := 0; i < len(tokens); i++ {
-		utils.Debug("%d\t%s\t%s\n", i, tokens[i].T, tokens[i].V)
+		verbose.Printf(3, "%d\t%s\t%s\n", i, tokens[i].T, tokens[i].V)
 	}
 	return &tokens, nil
 }
